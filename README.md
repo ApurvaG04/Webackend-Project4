@@ -2,9 +2,9 @@
 
 | Group 9         |
 | --------------- |
-| Apurva Gawande|885897918|apurva.gawande@csu.fullerton.edu
-| Hardik Vagrecha|885198390|hardik.vagrecha@csu.fullerton.edu
-| Apeksha Shah|
+| Apurva Gawande| 885897918 | apurva.gawande@csu.fullerton.edu
+| Hardik Vagrecha| 885198390 | hardik.vagrecha@csu.fullerton.edu
+| Apeksha Shah| 885904342 | apeksha@csu.fullerton.edu
 | Maria Ortega|
 
 ##### HOW TO RUN THE PROJECT
