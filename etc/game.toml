@@ -1,0 +1,2 @@
+[DATABASES]
+primary = 'sqlite+aiosqlite:///var/primary/mount/game.db'

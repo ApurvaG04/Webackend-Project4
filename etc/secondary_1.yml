@@ -1,0 +1,10 @@
+mount-dir: "./var/secondary_1/mount"
+data-dir: "./var/secondary_1/data"
+exec: "hypercorn game --reload --debug --bind game.local.gd:$PORT --access-logfile - --error-logfile - --log-level DEBUG"
+
+http:
+ addr: ":20203"
+static:
+ primary: false
+ hostname: "tuffix-vm"
+ advertise-url: "http://tuffix-vm:20202"
