@@ -11,55 +11,6 @@
 
 1. Copy the contents of our [nginx config file](https://github.com/himanitawade/Web-Back-End-Project2/blob/master/nginxconfig.txt) into a new file within `/etc/nginx/sites-enabled` called `nginxconfig`. Assuming the nginx service is already running, restart the service using `sudo service nginx restart`.
 
-Nginx Config:
-
-```
-server {
-    listen 80;
-    listen [::]:80;
-
-    server_name tuffix-vm;
-
-    location /registration {
-        proxy_pass http://127.0.0.1:5000/registration;
-    }
-
-    location /newgame {
-        auth_request /auth;
-        proxy_pass http://gameservice;
-    }
-
-    location /addguess {
-            auth_request /auth;
-            proxy_pass http://gameservice;
-    }
-
-    location /allgames {
-            auth_request /auth;
-            proxy_pass http://gameservice;
-    }
-
-    location /onegame {
-        auth_request /auth;
-        proxy_pass http://gameservice;
-    }
-
-
-    location = /auth {
-           internal;
-           proxy_pass http://127.0.0.1:5000/login;
-    }
-
-}
-
-upstream gameservice {
-    server 127.0.0.1:5100;
-    server 127.0.0.1:5101;
-    server 127.0.0.1:5102;
-    server 127.0.0.1:5103;
-}
-```
-
 2. Initialize the databases within the project folder
    ```c
       // step 1. give the script permissions to execute
