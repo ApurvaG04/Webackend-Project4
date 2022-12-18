@@ -127,3 +127,10 @@
           }
       ]
       ```
+
+6. Set up Cron
+
+- Setup the cronjob: run crontab -e
+- Select the editor of your choice. (/bin/nano recommended) 
+- After scrolling past the comments, copy/paste content of crontab file into the cron editor
+- save the file
