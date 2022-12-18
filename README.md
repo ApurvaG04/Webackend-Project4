@@ -1,129 +1,101 @@
-### Web Backend Project 4
+# CPSC-449-Web Backend Engineering:Project-4
+# Project Members:
 
-| Group 9         |
-| --------------- |
-| Apurva Gawande| 885897918 | apurva.gawande@csu.fullerton.edu
-| Hardik Vagrecha| 885198390 | hardik.vagrecha@csu.fullerton.edu
-| Apeksha Shah| 885904342 | apeksha@csu.fullerton.edu
-| Maria Ortega|
+1. Apurva Umakant Gawande | 885897918 | apurva.gawande@csu.fullerton.edu
+2. Hardik Vagrecha        | 885198390 | hardik.vagrecha@csu.fullerton.edu
+3. Apeksha Shah           | 885904342 | apeksha@csu.fullerton.edu
+4. Maria Ortega           |
 
-##### HOW TO RUN THE PROJECT
+# Project description: 
 
-1. Copy the contents of our [nginx config file](https://github.com/himanitawade/Web-Back-End-Project2/blob/master/nginxconfig.txt) into a new file within `/etc/nginx/sites-enabled` called `nginxconfig`. Assuming the nginx service is already running, restart the service using `sudo service nginx restart`.
+In this project, we are creating three replicas of the database which are named primary, secondary 1 and secondary 2. We are then configuring our game service such that the reads are distributed across the three replicas while writes continue to go to the primary database. We have created a new RESTful microservice to maintain a leaderboard for Wordle games.
 
-2. Initialize the databases within the project folder
-   ```c
-      // step 1. give the script permissions to execute
-      chmod +x ./bin/start.sh
+# Configuration files:
+1. Procfile is a mechanism for declaring what commands are run by your application to start the app 
+2. Update the nginx.config from nginx_config/tutorial into default file present in /etc/nginx/sites-enabled 
 
-      // step 2. run the script
-      ./bin/start.sh
+# The following are the steps to run the project:
+1. Installing and configuring Nginx:
+```bash
+sudo apt update
+sudo apt install --yes nginx-extras
+```
+2. Then cd into the CPSC449-Project4 folder and run the following commands:
+```bash
+cd bin
+chmod u+x litefs
+sh init_dir.sh
+cd ..
+```
+3. Start the services
+```bash
+foreman start 
+```
+4. Run both the init scripts to populate the database and automatically connect the api to the database. 
+```bash
+open a new terminal at the project folder and enter:
+sh ./bin/init_auth.sh
+sh ./bin/init_game.sh
+```
+Now the API can be run using Postman(the method which we followed) or using curl or httpie.
 
-      foreman start
+## ENDPOINT 1:
+For registering an user: @app.route("/register", methods=["POST"])
+```bash
+http POST http://tuffix-vm/register/ username=Rain password=rain@123
+```
+## ENDPOINT 2:
+For authenticating the user:@app.route("/auth", methods=["GET"])
+```bash
+Ex: On postman with Basic-Auth: http://tuffix-vm/auth
+note: this is no longer available externally, but other endpoints will make use of it
+```
+## ENDPOINT 3: 
+For creating a new game for an authenticated user:@app.route("/game/", methods=["POST"])
+```bash
+Ex: On postman with Basic-Auth: http://tuffix-vm/game
+http --auth Rain:rain@123 POST tuffix-vm/game
+```
+## ENDPOINT 4:
+For getting the game state of the authenticated user:@app.route("/game/:gameId", methods=["GET"])
+```bash
+Ex: On postman with Basic-Auth: http://tuffix-vm/game/:gameId
+http --auth Rain:rain@123 GET tuffix-vm/game/b96f966d-f76a-4d0e-9909-ea3f5823727b
+``` 
+## ENDPOINT 5:
+List all the games for the authenticated user:@app.route("/my-games", methods=["GET"])
+```bash
+Ex: On postman with Basic-Auth: http://tuffix-vm/my-games
+http --auth Rain:rain@123 GET tuffix-vm/my-games
+```
+## ENDPOINT 6:
+Guessing a word: @app.route("/game/:gameId", methods=["PATCH"])
+```bash
+Ex: On postman with Basic-Auth: http://tuffix-vm/game/:gameId
+note: In the body, select raw - JSON and then {"word":"apple"}
 
-   ```c
-      // step 3. give the script permissions to execute
-      chmod +x ./bin/init.sh
+http --auth aaaa:rain@123 PATCH tuffix-vm/game/b96f966d-f76a-4d0e-9909-ea3f5823727b word=money
+```
+## ENDPOINT 7:
+Reporting a game to the leaderboard: @app.route("/reportgame", methods=["POST"])
+```bash
+Ex: On postman: http://127.0.0.1:5400/reportgame
+note: In the body, select raw - JSON and then {"username":"Rain", "result":1, "guesses":3}
+note2: result is a 1 for win and 0 for loss
 
-      // step 4. run the script
-      ./bin/init.sh
-   ```
+http --auth POST http://127.0.0.1:5400/reportgame username=Rain result=1 guesses=3
+```
+## ENDPOINT 8:
+Resetting the leaderboard to empty: @app.route("/resetleaderboard", methods=["POST"])
+```bash
+Ex: On postman: http://127.0.0.1:5400/resetleaderboard
+http POST http://127.0.0.1:5400/resetleaderboard
+```
+## ENDPOINT 9:
+Viewing the top 10 on the leaderboard: @app.route("/leaderboard", methods=["GET"])
+```bash
+Ex: On postman: http://tuffix-vm/leaderboard
+# http GET http://tuffix-vm/leaderboard
 
-3. Populate the word databases
-
-   ```c
-      python3 dbpop.py
-   ```
-
-4. Start the API
-
-   ```c
-      foreman start --formation user=1,game=3
-      // NOTE: if there's an error upon running this where it doesn't recognize hypercorn, log out of Ubuntu and log back in.
-   ```
-
-5. Test all the endpoints using httpie
-   - user
-      - register account: `http POST http://tuffix-vm/registration username="yourusername" password="yourpassword"`
-    
-       Sample Output:
-       ```
-      {
-         "id": 3,
-         "password": "tawade",
-         "username": "himani"
-      }
-      ```
-     - login {Not accesible}: 'http --auth himani:tawade GET http://tuffix-vm/login'
-     Sample Output:
-     ```
-      HTTP/1.1 404 Not Found
-      Connection: keep-alive
-      Content-Encoding: gzip
-      Content-Type: text/html
-      Date: Fri, 18 Nov 2022 21:04:31 GMT
-      Server: nginx/1.18.0 (Ubuntu)
-      Transfer-Encoding: chunked
-
-      <html>
-      <head><title>404 Not Found</title></head>
-      <body>
-      <center><h1>404 Not Found</h1></center>
-      <hr><center>nginx/1.18.0 (Ubuntu)</center>
-      </body>
-      </html>
-      ```
-   - game
-
-      - create a new game: `http --auth yourusername:yourpassword POST http://tuffix-vm/newgame`
-      
-      Sample Output:
-      ```
-      'http --auth himani:tawade POST http://tuffix-vm/newgame'
-      {
-         "answerid": 3912,
-         "gameid": "b0039f36-6784-11ed-ba4a-615e339a8400",
-         "username": "himani"
-      }
-      ```
-      Note - this will return a `gameid`
-    - add a guess: `http --auth yourusername:yourpassword PUT http://tuffix-vm/addguess gameid="gameid" word="yourguess"`
-
-    Sample Output:
-    ```
-      http --auth himani:tawade PUT http://tuffix-vm/addguess gameid="b0039f36-6784-11ed-ba4a-615e339a8400" word="amigo"
-     {
-        "Accuracy": "XXOOO",
-        "guessedWord": "amigo"
-     }
-     ```
-    - display your active games: `http --auth yourusername:yourpassword GET http://tuffix-vm/allgames`
-
-    Sample Output:
-    ```
-      http --auth himani:tawade GET http://tuffix-vm/allgames
-      [
-         {
-            "gameid": "b0039f36-6784-11ed-ba4a-615e339a8400",
-            "gstate": "In-progress",
-            "guesses": 1
-         }
-      ]
-      ```
-    - display the game status and stats for one game: `http --auth yourusername:yourpassword GET http://tuffix-vm/onegame?id=gameid`
-       - example: `.../onegame?id=b97fcbb0-6717-11ed-8689-e9ba279d21b6`
-    Sample Output:
-    ```
-      http --auth himani:tawade GET http://tuffix-vm/onegame?id="b0039f36-6784-11ed-ba4a-615e339a8400"
-      [
-         {
-             "gameid": "b0039f36-6784-11ed-ba4a-615e339a8400",
-            "gstate": "In-progress",
-            "guesses": 1
-          },
-          {
-             "accuracy": "XXOOO",
-             "guessedword": "amigo"
-          }
-      ]
-      ```
+http http://127.0.0.1:5400/leaderboard
+```
